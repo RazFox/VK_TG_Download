@@ -10,6 +10,16 @@ class Images:
         self.__width, self.__height = self.__images_file.size
         self.__size_images = os.path.getsize(path_file)
 
+    def set_width_height_size(self) -> None:
+        """
+        Обновляем атрибуты класса из объекта изображения.
+        :return: None
+        """
+        self.__width, self.__height = self.__images_file.size
+        self.__size_images = os.path.getsize(self.__path_file)
+
+    def get_info_file(self):
+        return self.__images_file, self.__width, self.__height, self.__size_images
 
     def check_size_width(self, max_size: int) -> bool:
         """
@@ -47,16 +57,15 @@ class Images:
         else:
             return False
 
-
     def resize_image_width(self, size_width: int) -> None:
         """
         Уменьшает размер изображения по ширине, с расчетом новой высоты.
 
         :param size_width: int - Принимает новый размер ширины для изображения.
         """
-        self.__images_file.thumbnail(size=(size_width, self.__height)) # Меняем размер изображения
+        self.__images_file.thumbnail(size=(size_width, self.__height))  # Меняем размер изображения
         self.__images_file.save(self.__path_file)  # Сохранение изображения
-
+        self.set_width_height_size()
 
     def resize_image_hight(self, size_hight: int) -> None:
         """
@@ -64,7 +73,6 @@ class Images:
 
         :param size_hight: int - Принимает новый размер высоты для изображения.
         """
-        new_width = int(size_hight * width / height)  # Расчет новой ширины изображения
-        image_original = image_original.resize((new_width, size_hight),
-                                               Image.Resampling.LANCZOS)  # Изменения размеров изображения
-        image_original.save(path_user)  # Сохранение изображения
+        self.__images_file.thumbnail(size=(self.__width, size_hight))  # Меняем размер изображения
+        self.__images_file.save(self.__path_file)  # Сохранение изображения
+        self.set_width_height_size()
