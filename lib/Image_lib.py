@@ -3,6 +3,7 @@ from PIL import Image
 import os
 from script import Resize_script
 
+
 class Images:
 
     def __init__(self, path_file: str) -> None:
@@ -25,8 +26,11 @@ class Images:
     def get_size_images(self):
         return self.__size_images
 
-    def get_size_image(self):
-        return self.__width, self.__height
+    def get_size_image_width(self):
+        return self.__width
+
+    def get_size_image_height(self):
+        return self.__height
 
     def get_path_file(self):
         return self.__path_file
@@ -122,21 +126,16 @@ class Images:
         image_name_1 = "1 (1).jpg"
         image_name_2 = "1 (2).jpg"
         for folder, image_list in directory_dict.items():
-            if not image_list:
+            if not image_list or "Post.jpg" in image_list:
                 continue
-            image_list_merg = list()
-            for image in image_list:
-                name_image = image.index('.')
-                if image[:name_image] == image_name_1 or image[:name_image] == image_name_2:
-                    image_list_merg.append(Images(os.path.join(folder, image)))
-
+            image_list_merg = [Images(os.path.join(folder, image_name_1)),
+                               Images(os.path.join(folder, image_name_2))]
             for image_obj in image_list_merg:
                 if image_obj.check_size_hight(2000):
                     image_obj.resize_image_hight(2000)
             # Перебирает и распаковывает высоту и ширину изображений
-            width, hight = zip(*(image_obj.get_size_image() for image_obj in image_list_merg))
-            total_width = sum(width)
-            max_height = min(hight)
+            total_width = sum((image_obj.get_size_image_width() for image_obj in image_list_merg))
+            max_height = min((image_obj.get_size_image_height() for image_obj in image_list_merg))
             # Объединение изображений в одно
             new_img = Image.new('RGB', (total_width, max_height))
             image_name_total = "Post.jpg"
@@ -153,8 +152,6 @@ class Images:
             merging = Images(os.path.join(folder, image_name_total))
             if merging.check_size_width(5000):
                 merging.resize_image_width(5000)
-
-
 
     # def reduction_weight(self, path_user, ratio_resize):
     #     """
