@@ -1,14 +1,13 @@
 from pyrogram import Client, enums
-import datetime
 
 
 class TelegramLib:
 
-    def __init__(self, settings_dict: dict) -> None:
-        self.api_id = settings_dict["api_id"]
-        self.api_hash = settings_dict["api_hash"]
-        self.name_user_admin = settings_dict["name_user_admin"]
-        self.channel = settings_dict["channel"]
+    def __init__(self, name_user_admin: str, channel: str, api_id: str, api_hash) -> None:
+        self.api_id = api_id
+        self.api_hash = api_hash
+        self.name_user_admin = name_user_admin
+        self.channel = channel
         self.app = self.authorization()
 
     def authorization(self):
@@ -19,7 +18,7 @@ class TelegramLib:
         app = Client(name=self.name_user_admin, api_id=self.api_id, api_hash=self.api_hash)
         return app
 
-    def creat_post_telegram(self, image: str, text_post: str, date: datetime) -> None:
+    async def creat_post_telegram(self, image: str, text_post: str, date: object) -> None:
         """
         Создание поста в телеграмм
         :param image:
@@ -27,5 +26,6 @@ class TelegramLib:
         :param date:
         :return:
         """
-        self.app.send_photo(self.channel, photo=image, caption=text_post, schedule_date=date,
-                            parse_mode=enums.ParseMode.HTML)
+        async with self.app:
+            await self.app.send_photo(self.channel, photo=image, caption=text_post, schedule_date=date,
+                                      parse_mode=enums.ParseMode.HTML)

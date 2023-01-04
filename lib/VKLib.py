@@ -51,36 +51,22 @@ class VKLib:
 
     @classmethod
     def upload_photo_album(cls, server: str, list_file: list) -> [str, list, str, str, str]:
+        # TODO: Проверить работу метода, вернуть старый вариант
         """
-        Метод загрузки фото на сервер ВК
+        Метод загрузки фото на сервер ВК.
         :param server: Сервер для загрузки фото
-        :param photo1: Фото-1
-        :param photo2: Фото-2
-        :param photo3: Фото-3
-        :param photo4: Фото-4
-        :param photo5: Фото-5
+        :param list_file: Список с путями для загрузки фото
         :return: Возвращается данные для сохранения фото:
         server - сервер, photos_list - данные загруженных фотографий, aid - id альбома, gid - id группы, hash - хеш
         """
-        if len(list_file) == 5:
-            photo1, photo2, photo3, photo4, photo5 = list_file
-            upl = requests.post(server, files={"file1": open(photo1, "rb"), "file2": open(photo2, "rb"),
-                                               "file3": open(photo3, "rb"), "file4": open(photo4, "rb"),
-                                               "file5": open(photo5, "rb")}).json()
-        elif len(list_file) == 4:
-            photo1, photo2, photo3, photo4 = list_file
-            upl = requests.post(server, files={"file1": open(photo1, "rb"), "file2": open(photo2, "rb"),
-                                               "file3": open(photo3, "rb"), "file4": open(photo4, "rb")}).json()
-        elif len(list_file) == 3:
-            photo1, photo2, photo3 = list_file
-            upl = requests.post(server, files={"file1": open(photo1, "rb"), "file2": open(photo2, "rb"),
-                                               "file3": open(photo3, "rb")}).json()
-        elif len(list_file) == 2:
-            photo1, photo2 = list_file
-            upl = requests.post(server, files={"file1": open(photo1, "rb"), "file2": open(photo2, "rb")}).json()
+        new_dict_file = dict()
+        if not len(list_file) == 1:
+            for elem_num, elem in enumerate(list_file):
+                new_dict_file.update({"file{}".format(elem_num + 1): open(elem, "rb")})
         else:
-            photo1 = list_file[0]
-            upl = requests.post(server, files={"file1": open(photo1, "rb")}).json()
+            new_dict_file.update({"file1": open(list_file[0], "rb")})
+
+        upl = requests.post(server, files=new_dict_file).json()
 
         return upl["server"], upl["photos_list"], upl["aid"], upl["hash"], upl["gid"]
 
@@ -99,7 +85,6 @@ class VKLib:
                                     'group_id': self.group_id, 'server': server_photo,
                                     'photos_list': photos_list,
                                     'hash': hash_photo, 'v': self.v_api}).json()
-
 
     def wall_post(self, message, attachments, publish_date=None, from_group=0, close_comments=0,
                   copyright=None):
@@ -129,21 +114,13 @@ class VKLib:
         :param copyright: Источник материала, ссылка. По умолчанию None
         :return: возвращает id поста.
         """
-        if copyright == None:
-            param = {'access_token': self.token, 'owner_id': self.owner_id, 'from_group': from_group,
-                     'message': message,
-                     'attachments': attachments,
-                     'publish_date': publish_date,
-                     'close_comments': close_comments,
-                     'v': self.v_api}
-        else:
-            param = {'access_token': self.token, 'owner_id': self.owner_id, 'from_group': from_group,
-                     'message': message,
-                     'attachments': attachments,
-                     'publish_date': publish_date,
-                     'close_comments': close_comments,
-                     'copyright': copyright,
-                     'v': self.v_api}
+        param = {'access_token': self.token, 'owner_id': self.owner_id, 'from_group': from_group,
+                 'message': message,
+                 'attachments': attachments,
+                 'publish_date': publish_date,
+                 'close_comments': close_comments,
+                 'copyright': copyright,
+                 'v': self.v_api}
         post = requests.get('https://api.vk.com/method/wall.post', params=param).json()
         return post
 

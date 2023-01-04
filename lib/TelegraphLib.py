@@ -4,16 +4,16 @@ from telegraph import Telegraph
 
 class TelegraphLib:
 
-    def __init__(self, settings_dict: dict) -> None:
+    def __init__(self, name_channel: str, url_channel: str, api_telegraph: str) -> None:
         """
         :param settings_dict: dict - словарь с данными с ключами:
           name_channel: str = Наименование канала
           url_channel: str - ссылка на канал
           API_Telegraph: str - API Telegraph
         """
-        self.name_channel = settings_dict["name_channel"]
-        self.url_channel = settings_dict["url_channel"]
-        self.api_telegraph = settings_dict["API_Telegraph"]
+        self.__name_channel = name_channel
+        self.__url_channel = url_channel
+        self.__api_telegraph = api_telegraph
 
     def create_page_telegraph(self, name_new_page: str, new_url_line: str) -> str:
         """
@@ -23,13 +23,13 @@ class TelegraphLib:
         :param new_url_line: str - Строка ссылками на изображения
         :return: str - Ссылка на страницу
         """
-        telegraph = Telegraph(self.api_telegraph)
+        telegraph = Telegraph(self.__api_telegraph)
         response = telegraph.create_page(
             name_new_page,
             content=None,
             html_content=new_url_line.replace('\n', ''),
-            author_name=self.name_channel,
-            author_url=self.url_channel,
+            author_name=self.__name_channel,
+            author_url=self.__url_channel,
             return_content=False)
         url_new_page = f'http://telegra.ph/{response["path"]}'
         return url_new_page

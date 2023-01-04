@@ -1,8 +1,7 @@
 import pathlib
-
 from PIL import Image
 import os
-
+from script import Resize_script
 
 class Images:
 
@@ -20,8 +19,17 @@ class Images:
         self.__width, self.__height = self.__images_file.size
         self.__size_images = os.path.getsize(self.__path_file)
 
-    def get_info_file(self):
-        return self.__images_file, self.__width, self.__height, self.__size_images
+    def get_images_file(self):
+        return self.__images_file
+
+    def get_size_images(self):
+        return self.__size_images
+
+    def get_size_image(self):
+        return self.__width, self.__height
+
+    def get_path_file(self):
+        return self.__path_file
 
     def check_size_width(self, max_size: int) -> bool:
         """
@@ -100,6 +108,53 @@ class Images:
         """Проверка расширения у файла, если заданное расширение отсутствует, возвращает True"""
         if not self.__path_file.endswith(".{}".format(extension)):
             return True
+
+    @classmethod
+    def merge_image(cls, directory_dict):
+        """
+        Функия объединения 2ух изображений в одно для обложки поста.
+        Объединяет в каждой директории 2 файла с именами 1.jpg и 2.jpg
+        Сохраняет файл в директории под именем 1_Post.jpg и удаляет файлы 1.jpg и 2.jpg
+
+        :param sours_py: Каталог где хранятся директории для загрузки.
+        :param name_folder: Наименование директории с файлами.
+        """
+        image_name_1 = "1 (1).jpg"
+        image_name_2 = "1 (2).jpg"
+        for folder, image_list in directory_dict.items():
+            if not image_list:
+                continue
+            image_list_merg = list()
+            for image in image_list:
+                name_image = image.index('.')
+                if image[:name_image] == image_name_1 or image[:name_image] == image_name_2:
+                    image_list_merg.append(Images(os.path.join(folder, image)))
+
+            for image_obj in image_list_merg:
+                if image_obj.check_size_hight(2000):
+                    image_obj.resize_image_hight(2000)
+            # Перебирает и распаковывает высоту и ширину изображений
+            width, hight = zip(*(image_obj.get_size_image() for image_obj in image_list_merg))
+            total_width = sum(width)
+            max_height = min(hight)
+            # Объединение изображений в одно
+            new_img = Image.new('RGB', (total_width, max_height))
+            image_name_total = "Post.jpg"
+            x_offset = 0
+            for image_obj in image_list_merg:
+                im = image_obj.get_images_file()
+                new_img.paste(im, (x_offset, 0))
+                x_offset += im.size[0]
+            # Сохранение нового изображения и удаление старых
+            new_img.save(os.path.join(folder, image_name_total))
+            os.remove(os.path.join(folder, image_name_1))
+            os.remove(os.path.join(folder, image_name_2))
+            # Проверка ширины изображения и уменьшения его если True
+            merging = Images(os.path.join(folder, image_name_total))
+            if merging.check_size_width(5000):
+                merging.resize_image_width(5000)
+
+
 
     # def reduction_weight(self, path_user, ratio_resize):
     #     """
