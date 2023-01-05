@@ -59,7 +59,7 @@ def dir_path_work() -> str:
 dir_path_script = dir_path_work()  # Получаем адрес директории расположения основной директории скрипта
 
 # Считываем список профилей
-profile_file = open_settings_file(os.path.join(dir_path_script, "etc", "Profile_file.json"))
+profile_file = open_settings_file(os.path.join(dir_path_script, "account_set", "Profile_TG_file.json"))
 
 # Выбираем профиль и получаем данные профиля
 setting_account = menu_profile(profile_file)
@@ -90,7 +90,7 @@ directory_dict = directory.search_directory(os.path.join(dir_path_script, "TG", 
 date_time_post_list = Date_Time_Script.DateTime.tg_date_time()
 
 # Обрабатываем изображения и проверяем размер изображений.
-Resize_script.ImageResize(directory_dict, 5000).resizeTG()
+Resize_script.ImageResize(directory_dict, 5000, "jpg").resizeTG()
 Image_lib.Images.merge_image(directory_dict)
 os.system("cls")
 
