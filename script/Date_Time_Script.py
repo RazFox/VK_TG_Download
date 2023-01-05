@@ -1,11 +1,11 @@
 import os
 import datetime as DT
-
+from random import randint
 
 class DateTime:
 
     @classmethod
-    def tg_date_time(cls):
+    def tg_date_time(cls) -> list:
         """
         Запрашивает у пользователя стартовую и конечную дату и время, и возвращает список с объектами datetime
         :return: list datetime
@@ -27,7 +27,9 @@ class DateTime:
         for day in range(1, count_day + 1):
             for _ in range(count_post_day):
                 date_time_list.append(time_date_obj)
+                time_rand = randint(0, 59)  # Возвращает случайное значение от 0 до 59 для минут в посте
                 time_date_obj += DT.timedelta(hours=time_delta)
+                time_date_obj = time_date_obj.replace(minute=time_rand)
             time_date_obj = DT.datetime.combine(start_date_obj + DT.timedelta(days=day), start_date_time)
         return date_time_list
 

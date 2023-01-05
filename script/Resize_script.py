@@ -14,7 +14,8 @@ class ImageResize:
         for directory, image_list in self.__directory_dict.items():
             if not image_list:
                 continue
-            bar = IncrementalBar('Check_Resize_Image - {}'.format(os.path.basename(directory)), max=len(image_list))
+            len_image_list = len(image_list)
+            bar = IncrementalBar('Check_Resize_Image - {}'.format(os.path.basename(directory)), max=len_image_list)
             for image in image_list:
                 image_obj = Image_lib.Images(os.path.join(directory, image))
                 image_object_list.append(image_obj)
